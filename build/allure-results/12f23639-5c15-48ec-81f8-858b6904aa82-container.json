@@ -1,0 +1,1 @@
+{"uuid":"12f23639-5c15-48ec-81f8-858b6904aa82","name":"sortCryptoCurrencyWithTheHighestPriceInTheLast24HoursTest()","children":["fe7ee3fb-d644-400b-ae75-1045838fbdf4"],"befores":[{"name":"beforeTest","status":"passed","stage":"finished","steps":[],"attachments":[],"parameters":[],"start":1672135390820,"stop":1672135390825}],"afters":[],"start":1672135390817,"stop":1672135392035}

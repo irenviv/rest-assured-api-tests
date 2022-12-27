@@ -1,0 +1,1 @@
+{"uuid":"a6d10945-1820-4eed-b177-c7f2c5b4eabc","name":"getTickerStatisticsInTheLast24HoursTest()","children":["d52dacf2-50d8-45a8-86a0-6fde50a5a65e"],"befores":[{"name":"beforeTest","status":"passed","stage":"finished","steps":[],"attachments":[],"parameters":[],"start":1672135394026,"stop":1672135394028}],"afters":[],"start":1672135394024,"stop":1672135394746}

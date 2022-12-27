@@ -1,0 +1,1 @@
+{"uuid":"67ecb5a1-89bb-4ac2-bbe1-f65cd0dd79dc","name":"getPetInventoriesByStatus()","children":["d32f7408-242f-419d-8b2a-212ea85c7918"],"befores":[{"name":"beforeTest","status":"passed","stage":"finished","steps":[],"attachments":[],"parameters":[],"start":1672135413091,"stop":1672135413804}],"afters":[],"start":1672135413088,"stop":1672135415222}

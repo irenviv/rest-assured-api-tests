@@ -4,11 +4,8 @@ import com.kucoin.objects.currencies.CurrencyChainData;
 import com.kucoin.objects.currencies.CurrencyData;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static io.restassured.RestAssured.enableLoggingOfRequestAndResponseIfValidationFails;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Every.everyItem;
@@ -21,7 +18,7 @@ public class CurrenciesTests extends BaseTest {
     private String currency = "BTC";
 
     @Test
-    public void getCurrenciesTest(){
+    public void verifyAllCurrenciesDetailsTest(){
         given()
         .when()
             .get(CURRENCY_URL)
@@ -54,15 +51,14 @@ public class CurrenciesTests extends BaseTest {
         assertTrue(currencyData.getIsDebitEnabled());
     }
 
-    //TODO
     @Test
     public void verifyChainsInCurrencyTest(){
         List<CurrencyChainData> currencyChainData =
             given()
             .when()
-                .get(CURRENCY_URL + "/" + currency)
+            .get(CURRENCY_CHAINS_URL + "/" + currency)
             .then()
-                .extract().jsonPath().getList("data.chains", CurrencyChainData.class);
+            .extract().jsonPath().getList("data.chains", CurrencyChainData.class);
         assertEquals(6, currencyChainData.size());
 
         List<String> expectedChains = new ArrayList<>(

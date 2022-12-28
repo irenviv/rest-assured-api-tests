@@ -12,56 +12,80 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Tag("cryptocurrency")
 public class OrderBookTests extends BaseTest {
 
+    private final String currencyChain = "BTC-USDT";
+    private final int itemsInOrderBook = 20;
+
+    private List<List> getAsksInOrderBook(int itemsInOrderBook){
+        return given()
+                .param("symbol", currencyChain)
+                .when()
+                .get(ORDER_BOOK_URL + itemsInOrderBook)
+                .then()
+                .extract().jsonPath().getList("data.asks", List.class);
+    }
+
+    private List<List> getBidsInOrderBook(int itemsInOrderBook){
+        return given()
+                .param("symbol", currencyChain)
+                .when()
+                .get(ORDER_BOOK_URL + itemsInOrderBook)
+                .then()
+                .extract().jsonPath().getList("data.bids", List.class);
+    }
+
+    @Test
+    void verifyOrderBookConsists20AsksTest(){
+        var asks = getAsksInOrderBook(itemsInOrderBook);
+        assertEquals(itemsInOrderBook, asks.size());
+    }
+
     @Test
     void verifyAsksSortedFromLowToHighInPartOrderBookTest(){
         //get list of lists
         //"asks": [["6500.16", "0.57753524"],["6500.15", "0.57753524"]]
-        var asks = given()
-                    .param("symbol", "BTC-USDT")
-                .when()
-                    .get("/market/orderbook/level2_20")
-                .then()
-                    .extract().jsonPath().getList("data.asks", List.class);
-        assertEquals(20, asks.size());
+        List<List> asks = getAsksInOrderBook(itemsInOrderBook);
 
         //create list with asks price
-        List<Float> actualAsksPrice  = new ArrayList<>();
-        for(int i=0; i<asks.size(); i++){
-            String price = (String) asks.get(i).get(0);
-            actualAsksPrice.add(Float.parseFloat(price));
-        }
-        System.out.println("actualAsks: " + actualAsksPrice);
+        System.out.println("actualAsks: ");
+        List<Float> actualAsksPrice  = asks.stream()
+                .map(x -> Float.parseFloat((String) x.get(0)))
+                .peek(System.out::print)
+                .collect(Collectors.toList());
 
         //sort it
-        List<Float> sortedAsksByPrice = actualAsksPrice.stream().sorted().collect(Collectors.toList());
-        System.out.println("sortedAsksByPrice: " +  sortedAsksByPrice);
+        System.out.println("sortedAsksByPrice: ");
+        List<Float> sortedAsksByPrice = actualAsksPrice.stream()
+                .sorted()
+                .peek(System.out::print)
+                .collect(Collectors.toList());
+
         //verify lists are sorted
         assertEquals(sortedAsksByPrice, actualAsksPrice);
     }
 
     @Test
+    void verifyOrderBookConsists20BidsTest(){
+        var bids = getBidsInOrderBook(itemsInOrderBook);
+        assertEquals(itemsInOrderBook, bids.size());
+    }
+
+    @Test
     void verifyBidsSortedFromHighToLowInPartOrderBookTest(){
-        var bids = given()
-                .param("symbol", "BTC-USDT")
-                .when()
-                .get("/market/orderbook/level2_20")
-                .then()
-                .extract().jsonPath().getList("data.bids", List.class);
-        assertEquals(20, bids.size());
+        var bids = getBidsInOrderBook(itemsInOrderBook);
 
         //create list with bids price
-        List<Float> actualBidsPrice  = new ArrayList<>();
-        for(int i=0; i<bids.size(); i++){
-            String price = (String) bids.get(i).get(0);
-            actualBidsPrice.add(Float.parseFloat(price));
-        }
-        System.out.println("actualBidsPrice: " + actualBidsPrice);
+        System.out.println("actualBidsPrice: ");
+        List<Float> actualBidsPrice  = bids.stream()
+                .map(x -> Float.parseFloat((String) x.get(0)))
+                .peek(System.out::print)
+                .collect(Collectors.toList());
 
         //sort it
         List<Float> sortedBidsByPrice = actualBidsPrice.stream()
                 .sorted(Comparator.reverseOrder())
+                .peek(System.out::print)
                 .collect(Collectors.toList());
-        System.out.println("sortedAsksByPrice: " +  sortedBidsByPrice);
+
         //verify lists are sorted
         assertEquals(sortedBidsByPrice, actualBidsPrice);
     }

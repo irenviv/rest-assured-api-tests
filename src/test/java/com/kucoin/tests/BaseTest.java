@@ -11,6 +11,8 @@ public class BaseTest {
 
     public static final String BASE_URL = "https://api.kucoin.com";
     public static final String CURRENCY_URL = "/api/v1/currencies";
+    public static final String CURRENCY_CHAINS_URL = "/api/v2/currencies";
+    public static final String ORDER_BOOK_URL = "api/v1/market/orderbook/level2_";
 
     @BeforeEach
     public void beforeTest(){

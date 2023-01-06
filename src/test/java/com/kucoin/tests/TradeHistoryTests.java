@@ -13,9 +13,9 @@ public class TradeHistoryTests extends BaseTest {
     @Test
     public void verifyTradeHistoryDataTest(){
         given()
-            .param("symbol", "BTC-USDT")
+        .param("symbol", "BTC-USDT")
         .when()
-            .get("/api/v1/market/histories")
+        .get(TRADE_HISTORY_LINK)
         .then()
             .body("data.price", notNullValue())
             .body("data.size", notNullValue())

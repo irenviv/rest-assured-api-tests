@@ -23,13 +23,13 @@ public class SymbolsAndTickersTests extends BaseTest {
     private List<TickerData> getTickers(){
         return given()
                 .when()
-                    .get("/api/v1/market/allTickers")
+                .get(SYMBOLS_AND_TICKERS_LINK)
                 .then()
-                    .extract().jsonPath().getList("data.ticker", TickerData.class);
+                .extract().jsonPath().getList("data.ticker", TickerData.class);
     }
 
     @Test
-    public void filterCryptoCurrenciesTest(){
+    public void filterUSDTCryptoCurrenciesTest(){
         //get all cryptocurrency that ends with usdt
         List<TickerData> usdTickers = getTickers().stream()
                 .filter(x -> x.getSymbol().endsWith(exchangeToCurrency)).toList();
@@ -38,41 +38,50 @@ public class SymbolsAndTickersTests extends BaseTest {
     }
 
     @Test
-    public void sortCryptoCurrencyWithTheHighestPriceInTheLast24HoursTest(){
-        //sort dollars by price
-        //Comparator helps to compare exact fields in objects
-        List<TickerData> highToLow = getTickers().stream()
-                .filter(x -> x.getSymbol().endsWith(exchangeToCurrency)).sorted(new Comparator<TickerData>() {
-                    @Override
-                    public int compare(TickerData o1, TickerData o2) {
-                        return o2.getChangeRate().compareTo(o1.getChangeRate());
-                    }
-                }).toList();
+    public void verifyCurrencyPairWithTheHighestRateInTheLast24HoursTest(){
+        //filter currency that exchanged to dollar
+        List<TickerData> filteredTickers = getTickers().stream()
+                .filter(x -> x.getSymbol().endsWith(exchangeToCurrency)).limit(10).toList();
 
-        List<TickerData> top10 = highToLow.stream().limit(10).toList();
-        System.out.println("first symbol - " + top10.get(0).getSymbol());
-        assertEquals("FLAME-USDT",top10.get(0).getSymbol());
+        //create list with tickers that consist currency pair name and change rate
+        List<TickerDataShort> tickersShortData = new ArrayList<>();
+        filteredTickers.forEach(x-> tickersShortData
+                .add(new TickerDataShort(x.getSymbolName(), Float.parseFloat(x.getChangeRate()))));
+        tickersShortData.forEach(System.out::print);
+
+        //sort them
+        List<TickerDataShort> sortedTickers = tickersShortData.stream().sorted(new Comparator<TickerDataShort>() {
+                @Override
+                public int compare(TickerDataShort o1, TickerDataShort o2) {
+                    return o2.getChangeRate().compareTo(o1.getChangeRate());
+                }
+            }).toList();
+        sortedTickers.forEach(System.out::print);
+
+        //verify currency with the highest rate
+        assertEquals("LYM-USDT", sortedTickers.get(0).getCurrencyPairName());
     }
 
     @Test
-    public void sortCryptoCurrencyWithTheLowestPriceInTheLast24HoursTest() {
+    public void verifyCurrencyPairWithTheLowestChangeRateInTheLast24HoursTest() {
         List<TickerData> lowToHigh = getTickers().stream()
                 .filter(x -> x.getSymbol().endsWith(exchangeToCurrency))
                 .sorted(new TickerComparatorLow())
                 .limit(5)
                 .toList();
         System.out.println("the lowest cryptocurrency: " + lowToHigh.get(0).getSymbol());
-        assertEquals(lowToHigh.get(0).getSymbol(), "LTO-USDT");
+        assertEquals("SON-USDT", lowToHigh.get(0).getSymbol());
     }
 
     @Test
     public void getTickerStatisticsInTheLast24HoursTest(){
-        given()
-                    .param("symbol", "BTC-USDT")
+        String currencyPair = "BTC-USDT";
+                given()
+                    .param("symbol", currencyPair)
                 .when()
-                    .get("/api/v1/market/stats")
+                    .get(MARKET_STATISTICS_LINK)
                 .then()
-                     .body("data.symbol", equalTo("BTC-USDT"))
+                     .body("data.symbol", equalTo(currencyPair))
                      .body("data.buy", notNullValue())
                      .body("data.sell", notNullValue())
                      .body("data.changeRate", notNullValue())
@@ -84,14 +93,13 @@ public class SymbolsAndTickersTests extends BaseTest {
     }
 
     @Test
-    public void getMarketListCurrenciesTest(){
+    public void verifyMarketListOfCurrenciesTest(){
         Response response  = given()
                 .when()
-                    .get("/api/v1/markets")
+                .get(MARKET_LIST_LINK)
                 .then()
-                    .extract().response();
-        JsonPath jsonPath = response.jsonPath();
-        List<String> actualCurrenciesList = jsonPath.getList("data");
+                .extract().response();
+        List<String> actualCurrenciesList = response.jsonPath().getList("data");
         List<String> expectedCurrenciesList = new ArrayList<>(
                 List.of("USDS",
                         "BTC",
@@ -105,9 +113,7 @@ public class SymbolsAndTickersTests extends BaseTest {
                         "Polkadot",
                         "ETF"));
         assertEquals(11, actualCurrenciesList.size());
-        for(int i=0; i<actualCurrenciesList.size();i++){
-            assertEquals(expectedCurrenciesList.get(i), actualCurrenciesList.get(i));
-        }
+        assertEquals(expectedCurrenciesList, actualCurrenciesList);
     }
 
     //as example how to work with map

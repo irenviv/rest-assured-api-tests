@@ -34,13 +34,13 @@ public class OrderBookTests extends BaseTest {
     }
 
     @Test
-    void verifyOrderBookConsists20AsksTest(){
+    void verifyOrderBookConsistsOf20AsksTest(){
         var asks = getAsksInOrderBook(itemsInOrderBook);
         assertEquals(itemsInOrderBook, asks.size());
     }
 
     @Test
-    void verifyAsksSortedFromLowToHighInPartOrderBookTest(){
+    void verifyAsksSortedFromLowToHighInOrderBookTest(){
         //get list of lists
         //"asks": [["6500.16", "0.57753524"],["6500.15", "0.57753524"]]
         List<List> asks = getAsksInOrderBook(itemsInOrderBook);
@@ -64,13 +64,13 @@ public class OrderBookTests extends BaseTest {
     }
 
     @Test
-    void verifyOrderBookConsists20BidsTest(){
+    void verifyOrderBookConsistsOf20BidsTest(){
         var bids = getBidsInOrderBook(itemsInOrderBook);
         assertEquals(itemsInOrderBook, bids.size());
     }
 
     @Test
-    void verifyBidsSortedFromHighToLowInPartOrderBookTest(){
+    void verifyBidsSortedFromHighToLowInOrderBookTest(){
         var bids = getBidsInOrderBook(itemsInOrderBook);
 
         //create list with bids price
@@ -81,6 +81,7 @@ public class OrderBookTests extends BaseTest {
                 .collect(Collectors.toList());
 
         //sort it
+        System.out.println("sortedBidsPrice: ");
         List<Float> sortedBidsByPrice = actualBidsPrice.stream()
                 .sorted(Comparator.reverseOrder())
                 .peek(System.out::print)

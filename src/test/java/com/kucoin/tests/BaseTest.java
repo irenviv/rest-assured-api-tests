@@ -1,11 +1,12 @@
 package com.kucoin.tests;
 
+import com.kucoin.helpers.Specifications;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import org.junit.jupiter.api.BeforeEach;
-import swagger.petstore.helpers.Specifications;
+
 
 public class BaseTest {
 
